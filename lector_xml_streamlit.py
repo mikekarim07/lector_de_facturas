@@ -6,13 +6,6 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import io
 import base64
-
-import time
-import pandas as pd
-import xml.etree.ElementTree as ET
-import streamlit as st
-import io
-import base64
 import zipfile
 
 st.set_page_config(
@@ -257,6 +250,7 @@ def search_xml_files(zip_file):
 
 def main():
     uploaded_files = st.file_uploader('Cargar archivos ZIP', accept_multiple_files=True, type='zip')
+    rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas filtrar:', max_chars=13)
 
     if st.button('Procesar') and uploaded_files:
         xml_files = []
@@ -346,7 +340,7 @@ def main():
             #st.dataframe(df_not_processed_parse_xml33)
         
         
-        df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
+        # df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
         CFDIs = pd.concat([df_parse_xml33, df_parse_xml4, df_parse_xml32], ignore_index=True)
         CFDIs[['fecha_emision', 'hora_emision']] = CFDIs['fecha_emision'].str.split('T', n=1, expand=True)
         CFDIs[['fecha_emision']] = CFDIs[['fecha_emision']].apply(pd.to_datetime)
