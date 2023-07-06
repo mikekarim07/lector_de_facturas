@@ -6,7 +6,6 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import io
 import base64
-import zipfile
 
 st.set_page_config(
     page_title="CDFI Lector archivos xml - webapp",
@@ -95,7 +94,6 @@ def parse_xml33(xml_file):
         'uuid': uuid,
         'fecha_emision': fecha_emision
     }
-
 
 def parse_xmlcomp33(xml_file):
     # Parse the XML string
@@ -200,7 +198,6 @@ def parse_xmlcomp40(xml_file):
         "ImpSaldoInsoluto": imp_saldo_insoluto
     }
 
-
 def parse_xml32(xml_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -238,34 +235,109 @@ def parse_xml32(xml_file):
         'fecha_emision': fecha_emision
     }
 
-def search_xml_files(zip_file):
+def search_xml_files(folder_path):
     xml_files = []
 
-    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-        for file in zip_ref.namelist():
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
             if file.endswith('.xml'):
-                xml_files.append(zip_ref.read(file))
+                xml_files.append(os.path.join(root, file))
 
     return xml_files
 
+
+
+
+# def generate_excel_download_link(df_grouped_FBL3N):
+#        Credit Excel: https://discuss.streamlit.io/t/how-to-add-a-download-excel-csv-function-to-a-button/4474/5
+#        towrite = BytesIO()
+#        df_grouped_FBL3N.to_excel(towrite, index=False, header=True)  # write to BytesIO buffer
+#        towrite.seek(0)  # reset pointer
+#        b64 = base64.b64encode(towrite.read()).decode()
+#        href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="data_download.xlsx">Download Excel File</a>'
+#        return st.markdown(href, unsafe_allow_html=True)
+
+    
+    
+#     st.subheader('Downloads:')
+#     generate_excel_download_link(df_grouped_FBL3N)
+#     #generate_html_download_link(fig)
+
+
+
+# def main():
+    # # st.title('Lector de archivos XML correspondientes a CFDIs')
+
+    # # folder_path = st.text_input('Ruta de la carpeta que contiene los archivos XML:')
+    # # rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas hacer el análisis:')
+
+    # # if folder_path and rfc_busqueda:
+    # #     if not os.path.isdir(folder_path):
+    # #         st.error('La carpeta no existe. Proporcione una ruta válida.')
+    # #         return
+
+    # #     xml_files = search_xml_files(folder_path)
+
+    # #     if not xml_files:
+    # #         st.warning('La carpeta no contiene archivos XML.')
+    # #         return
+    # if 'folder_path' not in st.session_state:
+    #     st.session_state.folder_path = ''
+    # if 'rfc_busqueda' not in st.session_state:
+    #     st.session_state.rfc_busqueda = ''
+    #     st.title('Lector de archivos XML correspondientes a CFDIs')
+
+    # st.title('Lector de archivos XML correspondientes a CFDIs')
+
+    # folder_path_input = st.text_input('Ruta de la carpeta que contiene los archivos XML:', value=st.session_state.folder_path, key='folder_path_input')
+    # rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas hacer el análisis:', value=st.session_state.rfc_busqueda, key='rfc_busqueda')
+
+    # if st.button('Procesar'):
+    #     folder_path = folder_path_input  # Asignar el valor de folder_path_input a folder_path
+    #     st.session_state.folder_path = folder_path  # Guardar el valor en st.session_state
+
+    #     if not os.path.isdir(folder_path):
+    #         st.error('La carpeta no existe. Proporcione una ruta válida.')
+    #         return
+
+    #     xml_files = search_xml_files(folder_path)
+
+    #     if not xml_files:
+    #         st.warning('La carpeta no contiene archivos XML.')
+    #         return
+
+    #     total_archivos = len(xml_files)
+    #     st.info(f'Total de archivos en la carpeta: {total_archivos}')
+        
+    #     start_time = time.time()
+
 def main():
-    uploaded_files = st.file_uploader('Cargar archivos ZIP', accept_multiple_files=True, type='zip')
-    rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas filtrar:', max_chars=13)
+    folder_path = ''
+    rfc_busqueda = ''
 
-    if st.button('Procesar') and uploaded_files:
-        xml_files = []
+    st.title('Lector de archivos XML correspondientes a CFDIs')
 
-        for uploaded_file in uploaded_files:
-            with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
-                for file in zip_ref.namelist():
-                    if file.endswith('.xml'):
-                        xml_files.append(zip_ref.read(file))
+    folder_path_input = st.text_input('Ruta de la carpeta que contiene los archivos XML:', value=folder_path, key='folder_path_input')
+    rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas hacer el análisis:', value=rfc_busqueda, key='rfc_busqueda')
+
+    if st.button('Procesar'):
+        folder_path = folder_path_input  # Asignar el valor de folder_path_input a folder_path
+
+        if not os.path.isdir(folder_path):
+            st.error('La carpeta no existe. Proporcione una ruta válida.')
+            return
+
+        xml_files = search_xml_files(folder_path)
+
+        if not xml_files:
+            st.warning('La carpeta no contiene archivos XML.')
+            return
 
         total_archivos = len(xml_files)
-        st.info(f'Total de archivos cargados: {total_archivos}')
-
-        start_time = time.time()
+        st.info(f'Total de archivos en la carpeta: {total_archivos}')
         
+        start_time = time.time()
+
         data_parse_xml4 = []
         data_parse_xml33 = []
         data_parse_xml32 = []
@@ -324,6 +396,29 @@ def main():
         df_parse_xmlcomp33 = pd.DataFrame(data_parse_xmlcomp33)
         df_parser_xmlcomp40 = pd.DataFrame(data_parse_xmlcomp40)
 
+        # if data_parse_xml4:
+        #     df_parse_xml4 = pd.DataFrame(data_parse_xml4)
+        #     st.success(f'Se han procesado {len(df_parse_xml4)} archivos XML correspondientes a CFDIs versión 4.0')
+        #     #st.dataframe(df_parse_xml4)
+        # else:
+        #     st.warning('No se encontró ningún CFDI versión 4.0')
+        
+        # if data_parse_xml33:
+        #     df_parse_xml33 = pd.DataFrame(data_parse_xml33)
+        #     st.success(f'Se han procesado {len(df_parse_xml33)} archivos XML correspondientes a CFDIs versión 3.3')
+        #     #st.dataframe(df_parse_xml33)
+        # else:
+        #     st.warning('No se encontró ningún CFDI versión 3.3')
+        
+        # if data_parse_xml32:
+        #     df_parse_xml32 = pd.DataFrame(data_parse_xml32)
+        #     st.success(f'Se han procesado {len(df_parse_xml32)} archivos XML correspondientes a CFDIs versión 3.2')
+        #     #st.dataframe(df_parse_xml33)
+        # else:
+        #     st.warning('No se encontró ningún CFDI versión 3.2')
+
+
+
         if xml_files_not_processed_parse_xml4:
             df_not_processed_parse_xml4 = pd.DataFrame({'Archivo no procesado': xml_files_not_processed_parse_xml4})
             # st.warning(f'Archivos XML version 3.3 no procesados en la función 4.0: {len(df_not_processed_parse_xml4)}')
@@ -339,136 +434,166 @@ def main():
             # st.warning(f'Archivos XML version 4.0 no procesados en la función : {len(df_not_processed_parse_xml32)}')
             #st.dataframe(df_not_processed_parse_xml33)
         
-        st.dataframe(df_parse_xml4)
-
-
-        # # df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
-        # CFDIs = pd.concat([df_parse_xml33, df_parse_xml4, df_parse_xml32], ignore_index=True)
-        # CFDIs[['fecha_emision', 'hora_emision']] = CFDIs['fecha_emision'].str.split('T', n=1, expand=True)
-        # CFDIs[['fecha_emision']] = CFDIs[['fecha_emision']].apply(pd.to_datetime)
-        # CFDIs[['subtotal', 'total']] = CFDIs[['subtotal', 'total']].apply(pd.to_numeric)
-        # CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].replace(['I'],'ingreso')
-        # CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].replace(['E'],'egreso')
-        # CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].replace(['P'],'pago')
-        # CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].str.capitalize()
-        # CFDIs['Año'] = CFDIs['fecha_emision'].dt.year
-        # CFDIs['Mes'] = CFDIs['fecha_emision'].dt.month
-        # CFDIs['Día'] = CFDIs['fecha_emision'].dt.day
-        # CFDIs[['Año', 'Mes', 'Día']] = CFDIs[['Año', 'Mes', 'Día']].astype('string')
         
-        # Summary = CFDIs.groupby(by=['Año', 'Mes'], as_index=False)['subtotal'].sum()
-        # # formadepago = CFDIs[['forma_de_pago']].drop_duplicates()
+        df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
+        CFDIs = pd.concat([df_parse_xml33, df_parse_xml4, df_parse_xml32], ignore_index=True)
+        CFDIs[['fecha_emision', 'hora_emision']] = CFDIs['fecha_emision'].str.split('T', n=1, expand=True)
+        CFDIs[['fecha_emision']] = CFDIs[['fecha_emision']].apply(pd.to_datetime)
+        CFDIs[['subtotal', 'total']] = CFDIs[['subtotal', 'total']].apply(pd.to_numeric)
+        CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].replace(['I'],'ingreso')
+        CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].replace(['E'],'egreso')
+        CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].replace(['P'],'pago')
+        CFDIs['tipo_de_comprobante'] = CFDIs['tipo_de_comprobante'].str.capitalize()
+        CFDIs['Año'] = CFDIs['fecha_emision'].dt.year
+        CFDIs['Mes'] = CFDIs['fecha_emision'].dt.month
+        CFDIs['Día'] = CFDIs['fecha_emision'].dt.day
+        CFDIs[['Año', 'Mes', 'Día']] = CFDIs[['Año', 'Mes', 'Día']].astype('string')
         
-        # # st.write(len(df_parse_xml33))
-        # # st.dataframe(df_parse_xml33)
+        Summary = CFDIs.groupby(by=['Año', 'Mes'], as_index=False)['subtotal'].sum()
+        # formadepago = CFDIs[['forma_de_pago']].drop_duplicates()
+        
+        # st.write(len(df_parse_xml33))
+        # st.dataframe(df_parse_xml33)
 
-        # # st.write(df_parse_xml32.shape)
-        # # st.dataframe(df_parse_xml32)
-        # # st.write(df_parse_xml33.shape)
-        # # st.dataframe(df_parse_xml33)
-        # # st.write(df_parse_xml4.shape)
-        # # st.dataframe(df_parse_xml4)
+        # st.write(df_parse_xml32.shape)
+        # st.dataframe(df_parse_xml32)
+        # st.write(df_parse_xml33.shape)
+        # st.dataframe(df_parse_xml33)
+        # st.write(df_parse_xml4.shape)
+        # st.dataframe(df_parse_xml4)
         
         
             
 
         
-        # tab1, tab2, tab3, tab4, tab5 = st.tabs(["CFDIs", "Ingresos", "Egresos", "Complementos Pago", "Conciliacion Pagos"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["CFDIs", "Ingresos", "Egresos", "Complementos Pago", "Conciliacion Pagos"])
 
-        # with tab1:
-        #     st.subheader("Total de CFDIs")
-        #     st.caption('Detalle de los CFDIs procesados')
-        #     st.write(CFDIs.shape)
-        #     st.dataframe(CFDIs, height=600)
-        #     # st.selectbox('selecciona la fecha', ['Ene', 'Feb'])
+        with tab1:
+            st.subheader("Total de CFDIs")
+            st.caption('Detalle de los CFDIs procesados')
+            st.write(CFDIs.shape)
+            st.dataframe(CFDIs, height=600)
+            # st.selectbox('selecciona la fecha', ['Ene', 'Feb'])
 
 
-        # with tab2:
-        #     st.subheader("Ingresos")
-        #     if rfc_busqueda:
-        #         CFDIs_rfc_emisor = CFDIs[(CFDIs['rfc_emisor'] == rfc_busqueda) & (CFDIs['tipo_de_comprobante'] != 'Pago') ] 
-        #         # Customer = Customer[(Customer['Tx'] == 'EG') | (Customer['Tx'] == 'OK')]
-        #         st.caption('Detalle de CFDIs de Ingresos')
-        #         st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
-        #         st.write(CFDIs_rfc_emisor.shape)
-        #         st.dataframe(CFDIs_rfc_emisor)
-        #         st.divider()
-        #         st.caption('Resumen por periodo de Ingresos')
-        #         summary_rfc_emisor = CFDIs_rfc_emisor.groupby(by=['rfc_emisor', 'Año', 'Mes'], as_index=False)['subtotal'].sum()
-        #         st.dataframe(summary_rfc_emisor)
-        #         st.bar_chart(CFDIs_rfc_emisor, x='fecha_emision', y='subtotal')
+        with tab2:
+            st.subheader("Ingresos")
+            if rfc_busqueda:
+                CFDIs_rfc_emisor = CFDIs[(CFDIs['rfc_emisor'] == rfc_busqueda) & (CFDIs['tipo_de_comprobante'] != 'Pago') ] 
+                # Customer = Customer[(Customer['Tx'] == 'EG') | (Customer['Tx'] == 'OK')]
+                st.caption('Detalle de CFDIs de Ingresos')
+                st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
+                st.write(CFDIs_rfc_emisor.shape)
+                st.dataframe(CFDIs_rfc_emisor)
+                st.divider()
+                st.caption('Resumen por periodo de Ingresos')
+                summary_rfc_emisor = CFDIs_rfc_emisor.groupby(by=['rfc_emisor', 'Año', 'Mes'], as_index=False)['subtotal'].sum()
+                st.dataframe(summary_rfc_emisor)
+                st.bar_chart(CFDIs_rfc_emisor, x='fecha_emision', y='subtotal')
 
-        # with tab3:
-        #     st.subheader("Egresos")
-        #     if rfc_busqueda:
-        #         # CFDIs_rfc_receptor = CFDIs[CFDIs['rfc_receptor'] == rfc_busqueda]
-        #         CFDIs_rfc_receptor = CFDIs[(CFDIs['rfc_receptor'] == rfc_busqueda) & (CFDIs['tipo_de_comprobante'] != 'Pago') ] 
-        #         st.caption('Detalle de CFDIs de Egresos')
-        #         st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
-        #         st.write(CFDIs_rfc_receptor.shape)
-        #         st.dataframe(CFDIs_rfc_receptor)
-        #         st.divider()
-        #         st.subheader('Resumen por periodo de Egresos')
-        #         summary_rfc_receptor = CFDIs_rfc_receptor.groupby(by=['rfc_receptor', 'Año', 'Mes'], as_index=False)['subtotal'].sum()
-        #         st.dataframe(summary_rfc_receptor)
+        with tab3:
+            st.subheader("Egresos")
+            if rfc_busqueda:
+                # CFDIs_rfc_receptor = CFDIs[CFDIs['rfc_receptor'] == rfc_busqueda]
+                CFDIs_rfc_receptor = CFDIs[(CFDIs['rfc_receptor'] == rfc_busqueda) & (CFDIs['tipo_de_comprobante'] != 'Pago') ] 
+                st.caption('Detalle de CFDIs de Egresos')
+                st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
+                st.write(CFDIs_rfc_receptor.shape)
+                st.dataframe(CFDIs_rfc_receptor)
+                st.divider()
+                st.subheader('Resumen por periodo de Egresos')
+                summary_rfc_receptor = CFDIs_rfc_receptor.groupby(by=['rfc_receptor', 'Año', 'Mes'], as_index=False)['subtotal'].sum()
+                st.dataframe(summary_rfc_receptor)
 
-        # with tab4:
-        #     st.subheader("Complementos de Pago")
-        #     if rfc_busqueda and not df_parse_xmlcomp33.empty and not df_parser_xmlcomp40.empty:
-        #         # CFDIs_rfc_receptor = CFDIs[CFDIs['rfc_receptor'] == rfc_busqueda]
-        #         # comp_pago = df_parse_xmlcomp33[CFDIs['rfc_receptor'] == rfc_busqueda] 
-        #         st.caption('Detalle de los complementos de pago recibidos')
-        #         st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
-        #         # conciliacion = CFDIs.merge('UUID', left_on=)
-        #         st.write(df_parse_xmlcomp33.shape) 
-        #         df_parse_xmlcomp33 = pd.concat([df_parse_xmlcomp33, df_parser_xmlcomp40], ignore_index=True)
-        #         df_parse_xmlcomp33[['fecha_emision', 'hora_emision']] = df_parse_xmlcomp33['Fecha'].str.split('T', n=1, expand=True)
-        #         df_parse_xmlcomp33[['fecha_emision']] = df_parse_xmlcomp33[['fecha_emision']].apply(pd.to_datetime)
-        #         df_parse_xmlcomp33[['Monto', 'ImpSaldoAnt', 'ImpPagado', 'ImpSaldoInsoluto', 'NumParcialidad']] = df_parse_xmlcomp33[['Monto', 'ImpSaldoAnt', 'ImpPagado', 'ImpSaldoInsoluto', 'NumParcialidad']].apply(pd.to_numeric)
-        #         df_parse_xmlcomp33['Año'] = df_parse_xmlcomp33['fecha_emision'].dt.year
-        #         df_parse_xmlcomp33['Mes'] = df_parse_xmlcomp33['fecha_emision'].dt.month
-        #         df_parse_xmlcomp33['Día'] = df_parse_xmlcomp33['fecha_emision'].dt.day
-        #         df_parse_xmlcomp33[['Año', 'Mes', 'Día']] = df_parse_xmlcomp33[['Año', 'Mes', 'Día']].astype('string')
+        with tab4:
+            st.subheader("Complementos de Pago")
+            if rfc_busqueda and not df_parse_xmlcomp33.empty and not df_parser_xmlcomp40.empty:
+                # CFDIs_rfc_receptor = CFDIs[CFDIs['rfc_receptor'] == rfc_busqueda]
+                # comp_pago = df_parse_xmlcomp33[CFDIs['rfc_receptor'] == rfc_busqueda] 
+                st.caption('Detalle de los complementos de pago recibidos')
+                st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
+                # conciliacion = CFDIs.merge('UUID', left_on=)
+                st.write(df_parse_xmlcomp33.shape) 
+                df_parse_xmlcomp33 = pd.concat([df_parse_xmlcomp33, df_parser_xmlcomp40], ignore_index=True)
+                df_parse_xmlcomp33[['fecha_emision', 'hora_emision']] = df_parse_xmlcomp33['Fecha'].str.split('T', n=1, expand=True)
+                df_parse_xmlcomp33[['fecha_emision']] = df_parse_xmlcomp33[['fecha_emision']].apply(pd.to_datetime)
+                df_parse_xmlcomp33[['Monto', 'ImpSaldoAnt', 'ImpPagado', 'ImpSaldoInsoluto', 'NumParcialidad']] = df_parse_xmlcomp33[['Monto', 'ImpSaldoAnt', 'ImpPagado', 'ImpSaldoInsoluto', 'NumParcialidad']].apply(pd.to_numeric)
+                df_parse_xmlcomp33['Año'] = df_parse_xmlcomp33['fecha_emision'].dt.year
+                df_parse_xmlcomp33['Mes'] = df_parse_xmlcomp33['fecha_emision'].dt.month
+                df_parse_xmlcomp33['Día'] = df_parse_xmlcomp33['fecha_emision'].dt.day
+                df_parse_xmlcomp33[['Año', 'Mes', 'Día']] = df_parse_xmlcomp33[['Año', 'Mes', 'Día']].astype('string')
         
 
                 
-        #         st.dataframe(df_parse_xmlcomp33)
+                st.dataframe(df_parse_xmlcomp33)
         
-        # with tab5:
-        #     st.subheader("Conciliacion de Pagos")
-        #     if rfc_busqueda and not df_parse_xmlcomp33.empty:
-        #         # CFDIs_rfc_receptor = CFDIs[CFDIs['rfc_receptor'] == rfc_busqueda]
-        #         # comp_pago = df_parse_xmlcomp33[CFDIs['rfc_receptor'] == rfc_busqueda] 
-        #         st.caption('Conciliacion de los complementos de pago vs CFDIs de Egresos')
-        #         st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
-        #         #agrupar los comprobantes de pago por: rfc_emisor, rfc_receptor, fecha de pago (split column by delimiter to datetime), convertir a numero las columnas de numeros, 
-        #         #agregar tambien estructura de comprobante de pago 4.0
-        #         resumen_comppagos = df_parse_xmlcomp33.groupby(by=['RFC emisor', 'Nombre emisor', 'RFC receptor', 'IdDocumento'], as_index=False)['ImpPagado'].sum()
+        with tab5:
+            st.subheader("Conciliacion de Pagos")
+            if rfc_busqueda and not df_parse_xmlcomp33.empty:
+                # CFDIs_rfc_receptor = CFDIs[CFDIs['rfc_receptor'] == rfc_busqueda]
+                # comp_pago = df_parse_xmlcomp33[CFDIs['rfc_receptor'] == rfc_busqueda] 
+                st.caption('Conciliacion de los complementos de pago vs CFDIs de Egresos')
+                st.caption(f'Resultados filtrados por el RFC: {rfc_busqueda}')
+                #agrupar los comprobantes de pago por: rfc_emisor, rfc_receptor, fecha de pago (split column by delimiter to datetime), convertir a numero las columnas de numeros, 
+                #agregar tambien estructura de comprobante de pago 4.0
+                resumen_comppagos = df_parse_xmlcomp33.groupby(by=['RFC emisor', 'Nombre emisor', 'RFC receptor', 'IdDocumento'], as_index=False)['ImpPagado'].sum()
                 
-        #         # conciliacion = CFDIs.merge('UUID', left_on=)
-        #         # conciliacion = df_FBL3N.merge(df_parametros, left_on='Account', right_on='GL_Account', how='left')
-        #         st.write(resumen_comppagos.shape)
-        #         st.dataframe(resumen_comppagos)
+                # conciliacion = CFDIs.merge('UUID', left_on=)
+                # conciliacion = df_FBL3N.merge(df_parametros, left_on='Account', right_on='GL_Account', how='left')
+                st.write(resumen_comppagos.shape)
+                st.dataframe(resumen_comppagos)
+                
+    # buffer = io.BytesIO()
 
-        # if st.button('Descargar Excel'):
-        #     buffer = io.BytesIO()
-        #     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        #         # Escribir los DataFrames en hojas de Excel
-        #         CFDIs.to_excel(writer, sheet_name='CFDIs')
-        #         CFDIs_rfc_emisor.to_excel(writer, sheet_name='Ingresos')
-        #         CFDIs_rfc_receptor.to_excel(writer, sheet_name='Egresos')
-        #         df_parse_xmlcomp33.to_excel(writer, sheet_name='Comp Pago')
-        #         resumen_comppagos.to_excel(writer, sheet_name='Conciliacion')
+    #     # Create a Pandas Excel writer using XlsxWriter as the engine.
+    # with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+    #         # Write each dataframe to a different worksheet.
+    #         CFDIs.to_excel(writer, sheet_name='CFDIs')
+    #         CFDIs_rfc_emisor.to_excel(writer, sheet_name='Ingresos')
+    #         CFDIs_rfc_receptor.to_excel(writer, sheet_name='Egresos')
+    #         df_parse_xmlcomp33.to_excel(writer, sheet_name='Comp Pago')
+    #         resumen_comppagos.to_excel(writer, sheet_name='Conciliacion')
 
-        #         # Cerrar el escritor de Excel y guardar el archivo en el buffer
-        #         writer.save()
+    #         # Close the Pandas Excel writer and output the Excel file to the buffer
+    #         writer.save()
 
-        #     # Establecer enlace de descarga
-        #     b64 = base64.b64encode(buffer.getvalue()).decode()
-        #     href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="data_download.xlsx">Descargar Excel</a>'
-        #     st.markdown(href, unsafe_allow_html=True)
+    #         st.download_button(
+    #             label="Descarga Archivo de Excel",
+    #             data=buffer,
+    #             file_name="CFDIs.xlsx",
+    #             mime="application/vnd.ms-excel"
+    # ) 
+
+        if st.session_state.rfc_busqueda:
+            buffer = io.BytesIO()
+
+            # Create a Pandas Excel writer using XlsxWriter as the engine.
+            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                # Write each dataframe to a different worksheet.
+                CFDIs.to_excel(writer, sheet_name='CFDIs')
+                CFDIs_rfc_emisor.to_excel(writer, sheet_name='Ingresos')
+                CFDIs_rfc_receptor.to_excel(writer, sheet_name='Egresos')
+                df_parse_xmlcomp33.to_excel(writer, sheet_name='Comp Pago')
+                resumen_comppagos.to_excel(writer, sheet_name='Conciliacion')
+
+                # Close the Pandas Excel writer and output the Excel file to the buffer
+                writer.save()
+
+            # Set up download link
+            b64 = base64.b64encode(buffer.getvalue()).decode()
+            href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="CFDIs_datos.xlsx">Download Excel File</a>'
+            st.markdown(href, unsafe_allow_html=True)
+        
+
+        
+        
+
+        # st.write(Summary.shape)
+        # st.dataframe(Summary)
+        
+        # st.dataframe(formadepago)
+        
+
 
 if __name__ == '__main__':
     main()
-    
-
