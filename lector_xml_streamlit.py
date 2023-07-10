@@ -280,6 +280,24 @@ def main():
         df_parse_xml4 = pd.DataFrame()  # Inicializar df_parse_xml4 como un DataFrame vacío
         df_parser_xmlcomp33 = pd.DataFrame()  # Inicializar df_parse_xmlcomp33 como un DataFrame vacío
         df_parser_xmlcomp40 = pd.DataFrame()  # Inicializar df_parse_xmlcomp40 como un DataFrame vacío
+
+        if not df_parse_xml32.empty and 'rfc_emisor' in df_parse_xml32.columns:
+            df_parse_xml32 = df_parse_xml32[df_parse_xml32['rfc_emisor'] != '']
+
+        if not df_parse_xml33.empty and 'rfc_emisor' in df_parse_xml33.columns:
+            df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor'] != '']
+
+        if not df_parse_xml4.empty and 'rfc_emisor' in df_parse_xml4.columns:
+            df_parse_xml4 = df_parse_xml4[df_parse_xml4['rfc_emisor'] != '']
+
+        if not df_parser_xmlcomp33.empty and 'RFC emisor' in df_parser_xmlcomp33.columns:
+            df_parser_xmlcomp33 = df_parser_xmlcomp33[df_parser_xmlcomp33['RFC emisor'] != '']
+
+        if not df_parser_xmlcomp40.empty and 'RFC emisor' in df_parser_xmlcomp40.columns:
+            df_parser_xmlcomp40 = df_parser_xmlcomp40[df_parser_xmlcomp40['RFC emisor'] != '']
+
+
+        
         for xml_path in xml_files:
             try:
                 xml_data_parse_xml4 = parse_xml4(xml_path)
