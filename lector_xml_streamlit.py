@@ -274,19 +274,14 @@ def main():
         xml_files_not_processed_parse_xml32 = []
         xml_files_not_processed_parse_xmlcomp33 = []
         xml_files_not_processed_parse_xmlcomp40 = []
-        
-        df_parse_xml32 = pd.DataFrame()  # Inicializar df_parse_xml32 como un DataFrame vacío
-        df_parse_xml33 = pd.DataFrame()  # Inicializar df_parse_xml33 como un DataFrame vacío
-        df_parse_xml4 = pd.DataFrame()  # Inicializar df_parse_xml4 como un DataFrame vacío
-        df_parser_xmlcomp33 = pd.DataFrame()  # Inicializar df_parse_xmlcomp33 como un DataFrame vacío
-        df_parser_xmlcomp40 = pd.DataFrame()  # Inicializar df_parse_xmlcomp40 como un DataFrame vacío
+
         for xml_path in xml_files:
             try:
                 xml_data_parse_xml4 = parse_xml4(xml_path)
                 data_parse_xml4.append(xml_data_parse_xml4)
             except Exception as e:
                 xml_files_not_processed_parse_xml4.append(xml_path)
-        
+
             try:
                 xml_data_parse_xml33 = parse_xml33(xml_path)
                 data_parse_xml33.append(xml_data_parse_xml33)
@@ -320,46 +315,20 @@ def main():
         df_parse_xml33 = pd.DataFrame(data_parse_xml33)
         df_parse_xml32 = pd.DataFrame(data_parse_xml32)
         df_parse_xmlcomp33 = pd.DataFrame(data_parse_xmlcomp33)
-        df_parser_xmlcomp40 = pd.DataFrame(data_parse_xmlcomp40)
-
-        # if data_parse_xml4:
-        #     df_parse_xml4 = pd.DataFrame(data_parse_xml4)
-        #     st.success(f'Se han procesado {len(df_parse_xml4)} archivos XML correspondientes a CFDIs versión 4.0')
-        #     #st.dataframe(df_parse_xml4)
-        # else:
-        #     st.warning('No se encontró ningún CFDI versión 4.0')
-        
-        # if data_parse_xml33:
-        #     df_parse_xml33 = pd.DataFrame(data_parse_xml33)
-        #     st.success(f'Se han procesado {len(df_parse_xml33)} archivos XML correspondientes a CFDIs versión 3.3')
-        #     #st.dataframe(df_parse_xml33)
-        # else:
-        #     st.warning('No se encontró ningún CFDI versión 3.3')
-        
-        # if data_parse_xml32:
-        #     df_parse_xml32 = pd.DataFrame(data_parse_xml32)
-        #     st.success(f'Se han procesado {len(df_parse_xml32)} archivos XML correspondientes a CFDIs versión 3.2')
-        #     #st.dataframe(df_parse_xml33)
-        # else:
-        #     st.warning('No se encontró ningún CFDI versión 3.2')
-
-
+        df_parse_xmlcomp40 = pd.DataFrame(data_parse_xmlcomp40)
 
         if xml_files_not_processed_parse_xml4:
             df_not_processed_parse_xml4 = pd.DataFrame({'Archivo no procesado': xml_files_not_processed_parse_xml4})
-            # st.warning(f'Archivos XML version 3.3 no procesados en la función 4.0: {len(df_not_processed_parse_xml4)}')
-            #st.dataframe(df_not_processed_parse_xml4)
-        
+            st.dataframe(df_not_processed_parse_xml4)
+
         if xml_files_not_processed_parse_xml33:
             df_not_processed_parse_xml33 = pd.DataFrame({'Archivo no procesado': xml_files_not_processed_parse_xml33})
-            # st.warning(f'Archivos XML version 4.0 no procesados en la función 3.0: {len(df_not_processed_parse_xml33)}')
-            #st.dataframe(df_not_processed_parse_xml33)
+            st.dataframe(df_not_processed_parse_xml33)
 
         if xml_files_not_processed_parse_xml32:
             df_not_processed_parse_xml32 = pd.DataFrame({'Archivo no procesado': xml_files_not_processed_parse_xml32})
-            # st.warning(f'Archivos XML version 4.0 no procesados en la función : {len(df_not_processed_parse_xml32)}')
-            #st.dataframe(df_not_processed_parse_xml33)
-        
+            st.dataframe(df_not_processed_parse_xml32)
+
         st.dataframe(df_parse_xml33)
         st.dataframe(df_parse_xml4)
         st.dataframe(df_parse_xml32)
