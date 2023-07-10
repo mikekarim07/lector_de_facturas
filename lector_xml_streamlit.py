@@ -378,7 +378,8 @@ def main():
             # st.warning(f'Archivos XML version 4.0 no procesados en la función : {len(df_not_processed_parse_xml32)}')
             #st.dataframe(df_not_processed_parse_xml33)
         
-        
+        if 'rfc_emisor' in df_parse_xml33.columns and not df_parse_xml33['rfc_emisor'].empty:
+            df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
         df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
         CFDIs = pd.concat([df_parse_xml33, df_parse_xml4, df_parse_xml32], ignore_index=True)
         CFDIs[['fecha_emision', 'hora_emision']] = CFDIs['fecha_emision'].str.split('T', n=1, expand=True)
