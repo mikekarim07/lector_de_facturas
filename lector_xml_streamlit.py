@@ -280,24 +280,6 @@ def main():
         df_parse_xml4 = pd.DataFrame()  # Inicializar df_parse_xml4 como un DataFrame vacío
         df_parser_xmlcomp33 = pd.DataFrame()  # Inicializar df_parse_xmlcomp33 como un DataFrame vacío
         df_parser_xmlcomp40 = pd.DataFrame()  # Inicializar df_parse_xmlcomp40 como un DataFrame vacío
-
-        if not df_parse_xml32.empty and 'rfc_emisor' in df_parse_xml32.columns:
-            df_parse_xml32 = df_parse_xml32[df_parse_xml32['rfc_emisor'] != '']
-
-        if not df_parse_xml33.empty and 'rfc_emisor' in df_parse_xml33.columns:
-            df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor'] != '']
-
-        if not df_parse_xml4.empty and 'rfc_emisor' in df_parse_xml4.columns:
-            df_parse_xml4 = df_parse_xml4[df_parse_xml4['rfc_emisor'] != '']
-
-        if not df_parser_xmlcomp33.empty and 'RFC emisor' in df_parser_xmlcomp33.columns:
-            df_parser_xmlcomp33 = df_parser_xmlcomp33[df_parser_xmlcomp33['RFC emisor'] != '']
-
-        if not df_parser_xmlcomp40.empty and 'RFC emisor' in df_parser_xmlcomp40.columns:
-            df_parser_xmlcomp40 = df_parser_xmlcomp40[df_parser_xmlcomp40['RFC emisor'] != '']
-
-
-        
         for xml_path in xml_files:
             try:
                 xml_data_parse_xml4 = parse_xml4(xml_path)
@@ -378,8 +360,7 @@ def main():
             # st.warning(f'Archivos XML version 4.0 no procesados en la función : {len(df_not_processed_parse_xml32)}')
             #st.dataframe(df_not_processed_parse_xml33)
         
-        if 'rfc_emisor' in df_parse_xml33.columns and not df_parse_xml33['rfc_emisor'].empty:
-            df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
+        
         df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
         CFDIs = pd.concat([df_parse_xml33, df_parse_xml4, df_parse_xml32], ignore_index=True)
         CFDIs[['fecha_emision', 'hora_emision']] = CFDIs['fecha_emision'].str.split('T', n=1, expand=True)
@@ -542,3 +523,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
