@@ -235,16 +235,6 @@ def parse_xml32(xml_file):
         'fecha_emision': fecha_emision
     }
 
-# def search_xml_files(folder_path):
-#     xml_files = []
-
-#     for root, dirs, files in os.walk(folder_path):
-#         for file in files:
-#             if file.endswith('.xml'):
-#                 xml_files.append(os.path.join(root, file))
-
-#     return xml_files
-
 def search_xml_files(zip_file):
     xml_files = []
 
@@ -255,96 +245,6 @@ def search_xml_files(zip_file):
 
     return xml_files
 
-
-# def generate_excel_download_link(df_grouped_FBL3N):
-#        Credit Excel: https://discuss.streamlit.io/t/how-to-add-a-download-excel-csv-function-to-a-button/4474/5
-#        towrite = BytesIO()
-#        df_grouped_FBL3N.to_excel(towrite, index=False, header=True)  # write to BytesIO buffer
-#        towrite.seek(0)  # reset pointer
-#        b64 = base64.b64encode(towrite.read()).decode()
-#        href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="data_download.xlsx">Download Excel File</a>'
-#        return st.markdown(href, unsafe_allow_html=True)
-
-    
-    
-#     st.subheader('Downloads:')
-#     generate_excel_download_link(df_grouped_FBL3N)
-#     #generate_html_download_link(fig)
-
-
-
-# def main():
-    # # st.title('Lector de archivos XML correspondientes a CFDIs')
-
-    # # folder_path = st.text_input('Ruta de la carpeta que contiene los archivos XML:')
-    # # rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas hacer el análisis:')
-
-    # # if folder_path and rfc_busqueda:
-    # #     if not os.path.isdir(folder_path):
-    # #         st.error('La carpeta no existe. Proporcione una ruta válida.')
-    # #         return
-
-    # #     xml_files = search_xml_files(folder_path)
-
-    # #     if not xml_files:
-    # #         st.warning('La carpeta no contiene archivos XML.')
-    # #         return
-    # if 'folder_path' not in st.session_state:
-    #     st.session_state.folder_path = ''
-    # if 'rfc_busqueda' not in st.session_state:
-    #     st.session_state.rfc_busqueda = ''
-    #     st.title('Lector de archivos XML correspondientes a CFDIs')
-
-    # st.title('Lector de archivos XML correspondientes a CFDIs')
-
-    # folder_path_input = st.text_input('Ruta de la carpeta que contiene los archivos XML:', value=st.session_state.folder_path, key='folder_path_input')
-    # rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas hacer el análisis:', value=st.session_state.rfc_busqueda, key='rfc_busqueda')
-
-    # if st.button('Procesar'):
-    #     folder_path = folder_path_input  # Asignar el valor de folder_path_input a folder_path
-    #     st.session_state.folder_path = folder_path  # Guardar el valor en st.session_state
-
-    #     if not os.path.isdir(folder_path):
-    #         st.error('La carpeta no existe. Proporcione una ruta válida.')
-    #         return
-
-    #     xml_files = search_xml_files(folder_path)
-
-    #     if not xml_files:
-    #         st.warning('La carpeta no contiene archivos XML.')
-    #         return
-
-    #     total_archivos = len(xml_files)
-    #     st.info(f'Total de archivos en la carpeta: {total_archivos}')
-        
-    #     start_time = time.time()
-
-# def main():
-#     folder_path = ''
-#     rfc_busqueda = ''
-
-#     st.title('Lector de archivos XML correspondientes a CFDIs')
-
-#     folder_path_input = st.text_input('Ruta de la carpeta que contiene los archivos XML:', value=folder_path, key='folder_path_input')
-#     rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas hacer el análisis:', value=rfc_busqueda, key='rfc_busqueda')
-
-#     if st.button('Procesar'):
-#         folder_path = folder_path_input  # Asignar el valor de folder_path_input a folder_path
-
-#         if not os.path.isdir(folder_path):
-#             st.error('La carpeta no existe. Proporcione una ruta válida.')
-#             return
-
-#         xml_files = search_xml_files(folder_path)
-
-#         if not xml_files:
-#             st.warning('La carpeta no contiene archivos XML.')
-#             return
-
-#         total_archivos = len(xml_files)
-#         st.info(f'Total de archivos en la carpeta: {total_archivos}')
-        
-#         start_time = time.time()
 def main():
     uploaded_files = st.file_uploader('Cargar archivos ZIP', accept_multiple_files=True, type='zip')
     rfc_busqueda = st.text_input('Ingresa el RFC de la sociedad que deseas filtrar:', max_chars=13)
