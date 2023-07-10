@@ -361,7 +361,7 @@ def main():
             #st.dataframe(df_not_processed_parse_xml33)
         
         
-        df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
+        # df_parse_xml33 = df_parse_xml33[df_parse_xml33['rfc_emisor']!='']
         CFDIs = pd.concat([df_parse_xml33, df_parse_xml4, df_parse_xml32], ignore_index=True)
         CFDIs[['fecha_emision', 'hora_emision']] = CFDIs['fecha_emision'].str.split('T', n=1, expand=True)
         CFDIs[['fecha_emision']] = CFDIs[['fecha_emision']].apply(pd.to_datetime)
